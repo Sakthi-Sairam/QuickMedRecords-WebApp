@@ -3,13 +3,50 @@ import appointmentModel from '../models/appointmentModel.js';
 import doctorModel from '../models/doctorModel.js';
 
 // Create new health record (first time, basic details only)
+// const createHealthRecord = async (req, res) => {
+//     try {
+//         const { 
+//             userId, 
+//             blood_group,
+//             marital_status,
+//             occupation,
+//             allergies,
+//             insurance_details,
+//             emergency_contact 
+//         } = req.body;
+
+//         // Check if health record already exists
+//         const existingRecord = await healthRecordModel.findOne({ user_id: userId });
+//         if (existingRecord) {
+//             return res.json({ success: false, message: 'Health Record already exists' });
+//         }
+
+//         const healthRecordData = {
+//             user_id: userId,
+//             demographics: {
+//                 blood_group,
+//                 marital_status,
+//                 occupation
+//             },
+//             allergies,
+//             insurance_details,
+//             emergency_contact
+//         };
+
+//         const newHealthRecord = new healthRecordModel(healthRecordData);
+//         await newHealthRecord.save();
+
+//         res.json({ success: true, message: 'Health Record Created', healthRecord: newHealthRecord });
+//     } catch (error) {
+//         console.log(error);
+//         res.json({ success: false, message: error.message });
+//     }
+// };
 const createHealthRecord = async (req, res) => {
     try {
         const { 
-            userId, 
-            blood_group,
-            marital_status,
-            occupation,
+            userId,
+            demographics,
             allergies,
             insurance_details,
             emergency_contact 
@@ -23,11 +60,7 @@ const createHealthRecord = async (req, res) => {
 
         const healthRecordData = {
             user_id: userId,
-            demographics: {
-                blood_group,
-                marital_status,
-                occupation
-            },
+            demographics,
             allergies,
             insurance_details,
             emergency_contact
@@ -101,22 +134,51 @@ const addDoctorVisit = async (req, res) => {
 };
 
 // Update basic health record details (excluding doctor visits)
+// const updateHealthRecord = async (req, res) => {
+//     try {
+//         const { 
+//             userId,
+//             blood_group,
+//             marital_status,
+//             occupation,
+//             allergies,
+//             insurance_details,
+//             emergency_contact 
+//         } = req.body;
+
+//         const updateData = {
+//             'demographics.blood_group': blood_group,
+//             'demographics.marital_status': marital_status,
+//             'demographics.occupation': occupation,
+//             allergies,
+//             insurance_details,
+//             emergency_contact,
+//             updated_at: Date.now()
+//         };
+
+//         await healthRecordModel.findOneAndUpdate(
+//             { user_id: userId },
+//             { $set: updateData }
+//         );
+
+//         res.json({ success: true, message: 'Health Record Updated' });
+//     } catch (error) {
+//         console.log(error);
+//         res.json({ success: false, message: error.message });
+//     }
+// };
 const updateHealthRecord = async (req, res) => {
     try {
         const { 
             userId,
-            blood_group,
-            marital_status,
-            occupation,
+            demographics,
             allergies,
             insurance_details,
             emergency_contact 
         } = req.body;
 
         const updateData = {
-            'demographics.blood_group': blood_group,
-            'demographics.marital_status': marital_status,
-            'demographics.occupation': occupation,
+            demographics,
             allergies,
             insurance_details,
             emergency_contact,
