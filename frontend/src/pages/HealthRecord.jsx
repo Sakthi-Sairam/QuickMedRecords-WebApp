@@ -10,13 +10,17 @@ import { Pagination, EffectCoverflow } from 'swiper/modules';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import html2canvas from 'html2canvas';
+import DemographicsSection from '../components/healthRecordComponents/DemographicsSection';
+import InsuranceSection from '../components/healthRecordComponents/InsuranceSection';
+import EmergencyContactSection from '../components/healthRecordComponents/EmergencyContactSection';
+import NotesSection from '../components/healthRecordComponents/NotesSection';
+import SwiperSlideContent from '../components/healthRecordComponents/SwiperSlideContent';
 
 const HealthRecord = () => {
     const { token, backendUrl } = useContext(AppContext);
     const [loading, setLoading] = useState(true);
     const [healthRecord, setHealthRecord] = useState(null);
-    const [isEdit, setIsEdit] = useState(false);
-    const cardRef = useRef(null);
+    const [isEdit, setIsEdit] = useState(false);;
 
     const bloodGroups = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
     const maritalStatuses = ['Single', 'Married', 'Widowed', 'Divorced'];
@@ -128,116 +132,6 @@ const HealthRecord = () => {
         }
     };
 
-    // const downloadPDF = (visit) => {
-    //     const pdf = new jsPDF();
-    //     const pageWidth = pdf.internal.pageSize.getWidth();
-    //     const margin = 20;
-    //     const contentWidth = pageWidth - (2 * margin);
-    //     let yPosition = margin;
-    
-    //     // Helper function to add text and update y position
-    //     const addText = (text, fontSize = 12, isBold = false, isHeader = false) => {
-    //         pdf.setFontSize(fontSize);
-    //         if (isBold) pdf.setFont(undefined, 'bold');
-    //         else pdf.setFont(undefined, 'normal');
-            
-    //         const lines = pdf.splitTextToSize(text, contentWidth);
-    //         pdf.text(lines, margin, yPosition);
-    //         yPosition += (lines.length * fontSize * 0.3527) + (isHeader ? 8 : 4);
-    //         return lines.length;
-    //     };
-    
-    //     // Helper function to add section with label and content
-    //     const addSection = (label, content) => {
-    //         pdf.setFont(undefined, 'bold');
-    //         pdf.setFontSize(10);
-    //         pdf.text(label, margin, yPosition);
-    //         pdf.setFont(undefined, 'normal');
-    //         const lines = pdf.splitTextToSize(content || 'Not specified', contentWidth);
-    //         pdf.text(lines, margin, yPosition + 5);
-    //         yPosition += (lines.length * 3.5277) + 10;
-    //     };
-    
-    //     // Header
-    //     addText('Electronic Health Record', 24, true, true);
-    //     addText(`Record #${String(Math.floor(Math.random() * 9999)).padStart(4, '0')}`, 14);
-        
-    //     // Visit Date
-    //     const visitDate = new Date(visit.created_at).toLocaleDateString();
-    //     addText(`Visit Date: ${visitDate}`, 12, true);
-    
-    //     // Doctor Info
-    //     pdf.setFillColor(240, 247, 255); // Light blue background
-    //     pdf.rect(margin, yPosition, contentWidth, 20, 'F');
-    //     yPosition += 5;
-    //     addText('Attending Physician', 10);
-    //     addText(`${visit.doctor_id.name}`, 12, true);
-    //     addText(`${visit.doctor_id.speciality}`, 11);
-    //     yPosition += 5;
-    
-    //     // Diagnosis Section
-    //     yPosition += 10;
-    //     addText('Diagnosis', 16, true);
-    //     pdf.setFillColor(249, 250, 251); // Light gray background
-    //     pdf.rect(margin, yPosition, contentWidth, 20, 'F');
-    //     yPosition += 5;
-    //     addText(visit.diagnosis || 'No diagnosis specified');
-    //     yPosition += 10;
-    
-    //     // Prescriptions Section
-    //     if (Array.isArray(visit.prescriptions) && visit.prescriptions.length > 0) {
-    //         addText('Prescriptions', 16, true);
-    //         visit.prescriptions.forEach((prescription, index) => {
-    //             pdf.setFillColor(255, 255, 255);
-    //             pdf.rect(margin, yPosition, contentWidth, 40, 'F');
-    //             pdf.setDrawColor(229, 231, 235);
-    //             pdf.rect(margin, yPosition, contentWidth, 40, 'S');
-    //             yPosition += 5;
-                
-    //             // Medication name
-    //             addSection('Medication', prescription.medication);
-                
-    //             // Two column layout for dosage and frequency
-    //             const colWidth = contentWidth / 2;
-    //             pdf.setFont(undefined, 'bold');
-    //             pdf.text('Dosage', margin, yPosition);
-    //             pdf.text('Frequency', margin + colWidth, yPosition);
-    //             pdf.setFont(undefined, 'normal');
-    //             pdf.text(prescription.dosage || 'Not specified', margin, yPosition + 5);
-    //             pdf.text(prescription.frequency || 'Not specified', margin + colWidth, yPosition + 5);
-    //             yPosition += 15;
-                
-    //             // Duration and instructions
-    //             addSection('Duration', prescription.duration);
-    //             addSection('Instructions', prescription.instructions);
-    //             yPosition += 5;
-    //         });
-    //     }
-    
-    //     // Remarks Section
-    //     yPosition += 10;
-    //     addText('Remarks', 16, true);
-    //     pdf.setFillColor(249, 250, 251);
-    //     pdf.rect(margin, yPosition, contentWidth, 20, 'F');
-    //     yPosition += 5;
-    //     addText(visit.remarks || 'No remarks recorded');
-    
-    //     // Reports Section
-    //     if (Array.isArray(visit.reports) && visit.reports.length > 0) {
-    //         yPosition += 10;
-    //         addText('Reports', 16, true);
-    //         visit.reports.forEach((report) => {
-    //             pdf.setFillColor(249, 250, 251);
-    //             pdf.rect(margin, yPosition, contentWidth, 20, 'F');
-    //             yPosition += 5;
-    //             addText(report.title, 12, true);
-    //             addText(report.remarks);
-    //             yPosition += 5;
-    //         });
-    //     }
-    
-    //     pdf.save(`medical_visit_${visitDate.replace(/\//g, '-')}.pdf`);
-    // };
     const downloadPDF = async (visit) => {
         try {
             // Force mobile view for better PDF output
@@ -288,78 +182,15 @@ const HealthRecord = () => {
     const renderViewMode = () => (<>
         <div className="max-w-4xl mx-auto space-y-8 bg-white p-8 rounded-xl shadow-2xl">
             {/* Demographics Section */}
-            <div className="space-y-4">
-                <h3 className="text-xl font-semibold text-gray-800 border-b pb-2">Demographics</h3>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Blood Group</label>
-                        <p className="text-gray-900">{healthRecord?.demographics?.blood_group || 'Not specified'}</p>
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Marital Status</label>
-                        <p className="text-gray-900">{healthRecord?.demographics?.marital_status || 'Not specified'}</p>
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Occupation</label>
-                        <p className="text-gray-900">{healthRecord?.demographics?.occupation || 'Not specified'}</p>
-                    </div>
-                </div>
-            </div>
-
+            <DemographicsSection healthRecord={healthRecord} />
             {/* Insurance Details Section */}
-            <div className="space-y-4">
-                <h3 className="text-xl font-semibold text-gray-800 border-b pb-2">Insurance Details</h3>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Provider</label>
-                        <p className="text-gray-900">{healthRecord?.insurance_details?.provider || 'Not specified'}</p>
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Policy Number</label>
-                        <p className="text-gray-900">{healthRecord?.insurance_details?.policy_number || 'Not specified'}</p>
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Valid Until</label>
-                        <p className="text-gray-900">{healthRecord?.insurance_details?.valid_until ? new Date(healthRecord.insurance_details.valid_until).toLocaleDateString() : 'Not specified'}</p>
-                    </div>
-                </div>
-            </div>
+            <InsuranceSection healthRecord={healthRecord} />
 
             {/* Emergency Contact Section */}
-            <div className="space-y-4">
-                <h3 className="text-xl font-semibold text-gray-800 border-b pb-2">Emergency Contact</h3>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
-                        <p className="text-gray-900">{healthRecord?.emergency_contact?.name || 'Not specified'}</p>
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
-                        <p className="text-gray-900">{healthRecord?.emergency_contact?.phone || 'Not specified'}</p>
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Relationship</label>
-                        <p className="text-gray-900">{healthRecord?.emergency_contact?.relationship || 'Not specified'}</p>
-                    </div>
-                </div>
-            </div>
+            <EmergencyContactSection healthRecord={healthRecord} />
 
             {/* Notes Section */}
-            <div className="space-y-4">
-                <h3 className="text-xl font-semibold text-gray-800 border-b pb-2">Notes</h3>
-                {Array.isArray(healthRecord?.notes) && healthRecord.notes.length > 0 ? (
-                    <ul>
-                        {healthRecord.notes.map((note, index) => (
-                            <li key={index}>
-                                <strong>{note.created_by.name} ({note.created_by.speciality}): </strong>
-                                {note.note}
-                            </li>
-                        ))}
-                    </ul>
-                ) : (
-                    <p>No notes recorded</p>
-                )}
-            </div>
+            <NotesSection healthRecord={healthRecord} />
 
             {/* <hr className="my-8 border-gray-300" /> */}
             <div className="space-y-4">
@@ -406,152 +237,7 @@ const HealthRecord = () => {
                     const formattedDate = isNaN(visitDate) ? 'Invalid Date' : visitDate.toLocaleDateString();
                     return (
                         <SwiperSlide key={index}>
-                            <div className="bg-white rounded-xl shadow-lg overflow-hidden w-full max-w-[210mm] mx-auto p-4 md:p-8 lg:p-12">
-                                {/* Header Section */}
-                                <div className="border-b-2 border-gray-200 pb-4 md:pb-6 mb-4 md:mb-8">
-                                    <div className="flex flex-col md:flex-row justify-between items-start gap-4 mb-4 md:mb-6">
-                                        <div>
-                                            <h3 className="text-xl md:text-3xl font-bold text-gray-900">Electronic Health Record</h3>
-                                            <p className="text-gray-500 mt-1 md:mt-2">Record #{String(index + 1).padStart(4, '0')}</p>
-                                        </div>
-                                        <div className="md:text-right">
-                                            <p className="text-base md:text-lg font-semibold text-gray-900">{formattedDate}</p>
-                                            <p className="text-gray-500 mt-1">Visit Date</p>
-                                        </div>
-                                    </div>
-
-                                    <div className="mt-4">
-                                        <div className="bg-blue-50 rounded-lg p-3 md:p-4">
-                                            <p className="text-sm text-gray-500">Attending Physician</p>
-                                            <p className="text-base md:text-lg font-semibold text-gray-900">{visit.doctor_id.name}</p>
-                                            <p className="text-blue-600 text-sm md:text-base">{visit.doctor_id.speciality}</p>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {/* Diagnosis Section */}
-                                <div className="mb-4 md:mb-8">
-                                    <h4 className="text-lg md:text-xl font-semibold text-gray-900 mb-2 md:mb-4">Diagnosis</h4>
-                                    <div className="bg-gray-50 rounded-lg p-3 md:p-4">
-                                        <p className="text-sm md:text-base text-gray-700">{visit.diagnosis || 'No diagnosis specified'}</p>
-                                    </div>
-                                </div>
-
-                                {/* Prescriptions Section */}
-                                <div className="mb-4 md:mb-8">
-                                    <h4 className="text-lg md:text-xl font-semibold text-gray-900 mb-2 md:mb-4">Prescriptions</h4>
-                                    {Array.isArray(visit.prescriptions) && visit.prescriptions.length > 0 ? (
-                                        <div>
-                                            {/* Desktop Table View - Hidden on mobile */}
-                                            <div className="hidden md:block overflow-x-auto">
-                                                <div className="inline-block min-w-full align-middle">
-                                                    <table className="min-w-full divide-y divide-gray-200">
-                                                        <thead>
-                                                            <tr className="bg-gray-50">
-                                                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Medication</th>
-                                                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Dosage</th>
-                                                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Frequency</th>
-                                                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Duration</th>
-                                                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Instructions</th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody className="bg-white divide-y divide-gray-200">
-                                                            {visit.prescriptions.map((prescription, idx) => (
-                                                                <tr key={idx} className="hover:bg-gray-50">
-                                                                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{prescription.medication}</td>
-                                                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{prescription.dosage}</td>
-                                                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{prescription.frequency}</td>
-                                                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{prescription.duration}</td>
-                                                                    <td className="px-6 py-4 text-sm text-gray-500">{prescription.instructions}</td>
-                                                                </tr>
-                                                            ))}
-                                                        </tbody>
-                                                    </table>
-                                                </div>
-                                            </div>
-
-                                            {/* Mobile Card View - Shown only on mobile */}
-                                            <div className="md:hidden space-y-4">
-                                                {visit.prescriptions.map((prescription, idx) => (
-                                                    <div key={idx} className="bg-white shadow rounded-lg p-4 border border-gray-200">
-                                                        <div className="space-y-3">
-                                                            <div>
-                                                                <label className="text-xs font-medium text-gray-500 block">Medication</label>
-                                                                <p className="text-sm font-medium text-gray-900">{prescription.medication}</p>
-                                                            </div>
-                                                            <div className="grid grid-cols-2 gap-3">
-                                                                <div>
-                                                                    <label className="text-xs font-medium text-gray-500 block">Dosage</label>
-                                                                    <p className="text-sm text-gray-900">{prescription.dosage}</p>
-                                                                </div>
-                                                                <div>
-                                                                    <label className="text-xs font-medium text-gray-500 block">Frequency</label>
-                                                                    <p className="text-sm text-gray-900">{prescription.frequency}</p>
-                                                                </div>
-                                                            </div>
-                                                            <div>
-                                                                <label className="text-xs font-medium text-gray-500 block">Duration</label>
-                                                                <p className="text-sm text-gray-900">{prescription.duration}</p>
-                                                            </div>
-                                                            <div>
-                                                                <label className="text-xs font-medium text-gray-500 block">Instructions</label>
-                                                                <p className="text-sm text-gray-900">{prescription.instructions}</p>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        </div>
-                                    ) : (
-                                        <p className="text-gray-500 italic text-sm md:text-base">No prescriptions recorded</p>
-                                    )}
-                                </div>
-
-                                {/* Remarks Section */}
-                                <div className="mb-4 md:mb-8">
-                                    <h4 className="text-lg md:text-xl font-semibold text-gray-900 mb-2 md:mb-4">Remarks</h4>
-                                    <div className="bg-gray-50 rounded-lg p-3 md:p-4">
-                                        <p className="text-sm md:text-base text-gray-700">{visit.remarks || 'No remarks recorded'}</p>
-                                    </div>
-                                </div>
-
-                                {/* Reports Section */}
-                                <div className="mb-4 md:mb-8">
-                                    <h4 className="text-lg md:text-xl font-semibold text-gray-900 mb-2 md:mb-4">Reports</h4>
-                                    {Array.isArray(visit.reports) && visit.reports.length > 0 ? (
-                                        <div className="space-y-2 md:space-y-3">
-                                            {visit.reports.map((report, idx) => (
-                                                <div key={idx} className="flex flex-col md:flex-row items-start md:items-center bg-gray-50 rounded-lg p-3 md:p-4 gap-3">
-                                                    <div className="flex-1">
-                                                        <h5 className="font-medium text-sm md:text-base text-gray-900">{report.title}</h5>
-                                                        <p className="text-xs md:text-sm text-gray-500 mt-1">{report.remarks}</p>
-                                                    </div>
-                                                    <a
-                                                        href={report.url}
-                                                        target="_blank"
-                                                        rel="noopener noreferrer"
-                                                        className="w-full md:w-auto inline-flex justify-center items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
-                                                    >
-                                                        View Report
-                                                    </a>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    ) : (
-                                        <p className="text-gray-500 italic text-sm md:text-base">No reports attached</p>
-                                    )}
-                                </div>
-
-                                {/* Footer Section */}
-                                <div className="border-t border-gray-200 pt-4 md:pt-8 mt-4 md:mt-8">
-                                    <button
-                                        onClick={() => downloadPDF(visit)}
-                                        className="w-full md:w-auto inline-flex justify-center items-center px-4 md:px-6 py-2 md:py-3 border border-transparent rounded-md shadow-sm text-sm md:text-base font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                                    >
-                                        Download Record as PDF
-                                    </button>
-                                </div>
-                            </div>
+                            <SwiperSlideContent visit={visit} downloadPDF={() => downloadPDF(visit)} index={index} formattedDate={formattedDate} />
                         </SwiperSlide>
                     );
                 })}
