@@ -9,6 +9,7 @@ import 'swiper/css/effect-coverflow';
 import { Pagination, EffectCoverflow } from 'swiper/modules';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
+import html2canvas from 'html2canvas';
 
 const HealthRecord = () => {
     const { token, backendUrl } = useContext(AppContext);
@@ -127,67 +128,157 @@ const HealthRecord = () => {
         }
     };
 
-    const downloadPDF = (visit) => {
-        const pdf = new jsPDF();
-        const pageWidth = pdf.internal.pageSize.getWidth();
-
-        // Add header
-        pdf.setFontSize(20);
-        pdf.text('Medical Visit Record', pageWidth / 2, 20, { align: 'center' });
-
-        // Add visit details
-        pdf.setFontSize(12);
-        const visitDate = new Date(visit.created_at).toLocaleDateString();
-        pdf.text(`Date: ${visitDate}`, 20, 40);
-        pdf.text(`Doctor: ${visit.doctor_id.name} (${visit.doctor_id.speciality})`, 20, 50);
-        pdf.text(`Diagnosis: ${visit.diagnosis || 'Not specified'}`, 20, 60);
-
-        // Add prescriptions table
-        if (Array.isArray(visit.prescriptions) && visit.prescriptions.length > 0) {
-            pdf.text('Prescriptions:', 20, 80);
-            const prescriptionData = visit.prescriptions.map(p => [
-                p.medication,
-                p.dosage,
-                p.frequency,
-                p.duration,
-                p.instructions
-            ]);
-
-            pdf.autoTable({
-                startY: 90,
-                head: [['Medication', 'Dosage', 'Frequency', 'Duration', 'Instructions']],
-                body: prescriptionData,
-                margin: { top: 90 },
-                styles: { fontSize: 10 },
-                columnStyles: {
-                    0: { cellWidth: 30 },
-                    1: { cellWidth: 30 },
-                    2: { cellWidth: 30 },
-                    3: { cellWidth: 30 },
-                    4: { cellWidth: 'auto' }
-                }
+    // const downloadPDF = (visit) => {
+    //     const pdf = new jsPDF();
+    //     const pageWidth = pdf.internal.pageSize.getWidth();
+    //     const margin = 20;
+    //     const contentWidth = pageWidth - (2 * margin);
+    //     let yPosition = margin;
+    
+    //     // Helper function to add text and update y position
+    //     const addText = (text, fontSize = 12, isBold = false, isHeader = false) => {
+    //         pdf.setFontSize(fontSize);
+    //         if (isBold) pdf.setFont(undefined, 'bold');
+    //         else pdf.setFont(undefined, 'normal');
+            
+    //         const lines = pdf.splitTextToSize(text, contentWidth);
+    //         pdf.text(lines, margin, yPosition);
+    //         yPosition += (lines.length * fontSize * 0.3527) + (isHeader ? 8 : 4);
+    //         return lines.length;
+    //     };
+    
+    //     // Helper function to add section with label and content
+    //     const addSection = (label, content) => {
+    //         pdf.setFont(undefined, 'bold');
+    //         pdf.setFontSize(10);
+    //         pdf.text(label, margin, yPosition);
+    //         pdf.setFont(undefined, 'normal');
+    //         const lines = pdf.splitTextToSize(content || 'Not specified', contentWidth);
+    //         pdf.text(lines, margin, yPosition + 5);
+    //         yPosition += (lines.length * 3.5277) + 10;
+    //     };
+    
+    //     // Header
+    //     addText('Electronic Health Record', 24, true, true);
+    //     addText(`Record #${String(Math.floor(Math.random() * 9999)).padStart(4, '0')}`, 14);
+        
+    //     // Visit Date
+    //     const visitDate = new Date(visit.created_at).toLocaleDateString();
+    //     addText(`Visit Date: ${visitDate}`, 12, true);
+    
+    //     // Doctor Info
+    //     pdf.setFillColor(240, 247, 255); // Light blue background
+    //     pdf.rect(margin, yPosition, contentWidth, 20, 'F');
+    //     yPosition += 5;
+    //     addText('Attending Physician', 10);
+    //     addText(`${visit.doctor_id.name}`, 12, true);
+    //     addText(`${visit.doctor_id.speciality}`, 11);
+    //     yPosition += 5;
+    
+    //     // Diagnosis Section
+    //     yPosition += 10;
+    //     addText('Diagnosis', 16, true);
+    //     pdf.setFillColor(249, 250, 251); // Light gray background
+    //     pdf.rect(margin, yPosition, contentWidth, 20, 'F');
+    //     yPosition += 5;
+    //     addText(visit.diagnosis || 'No diagnosis specified');
+    //     yPosition += 10;
+    
+    //     // Prescriptions Section
+    //     if (Array.isArray(visit.prescriptions) && visit.prescriptions.length > 0) {
+    //         addText('Prescriptions', 16, true);
+    //         visit.prescriptions.forEach((prescription, index) => {
+    //             pdf.setFillColor(255, 255, 255);
+    //             pdf.rect(margin, yPosition, contentWidth, 40, 'F');
+    //             pdf.setDrawColor(229, 231, 235);
+    //             pdf.rect(margin, yPosition, contentWidth, 40, 'S');
+    //             yPosition += 5;
+                
+    //             // Medication name
+    //             addSection('Medication', prescription.medication);
+                
+    //             // Two column layout for dosage and frequency
+    //             const colWidth = contentWidth / 2;
+    //             pdf.setFont(undefined, 'bold');
+    //             pdf.text('Dosage', margin, yPosition);
+    //             pdf.text('Frequency', margin + colWidth, yPosition);
+    //             pdf.setFont(undefined, 'normal');
+    //             pdf.text(prescription.dosage || 'Not specified', margin, yPosition + 5);
+    //             pdf.text(prescription.frequency || 'Not specified', margin + colWidth, yPosition + 5);
+    //             yPosition += 15;
+                
+    //             // Duration and instructions
+    //             addSection('Duration', prescription.duration);
+    //             addSection('Instructions', prescription.instructions);
+    //             yPosition += 5;
+    //         });
+    //     }
+    
+    //     // Remarks Section
+    //     yPosition += 10;
+    //     addText('Remarks', 16, true);
+    //     pdf.setFillColor(249, 250, 251);
+    //     pdf.rect(margin, yPosition, contentWidth, 20, 'F');
+    //     yPosition += 5;
+    //     addText(visit.remarks || 'No remarks recorded');
+    
+    //     // Reports Section
+    //     if (Array.isArray(visit.reports) && visit.reports.length > 0) {
+    //         yPosition += 10;
+    //         addText('Reports', 16, true);
+    //         visit.reports.forEach((report) => {
+    //             pdf.setFillColor(249, 250, 251);
+    //             pdf.rect(margin, yPosition, contentWidth, 20, 'F');
+    //             yPosition += 5;
+    //             addText(report.title, 12, true);
+    //             addText(report.remarks);
+    //             yPosition += 5;
+    //         });
+    //     }
+    
+    //     pdf.save(`medical_visit_${visitDate.replace(/\//g, '-')}.pdf`);
+    // };
+    const downloadPDF = async (visit) => {
+        try {
+            // Force mobile view for better PDF output
+            const slideElement = document.querySelector('.swiper-slide-active');
+            if (!slideElement) return;
+    
+            const visitContent = slideElement.querySelector('.bg-white');
+            if (!visitContent) return;
+    
+            // Temporarily modify styles for better capture
+            const originalWidth = visitContent.style.width;
+            visitContent.style.width = '757px'; // mobile width
+            
+            // Create canvas from the element
+            const canvas = await html2canvas(visitContent, {
+                scale: 2, // Higher scale for better quality
+                useCORS: true,
+                logging: false,
+                windowWidth: 375, // Force mobile viewport width
             });
-        }
-
-        // Add remarks
-        const finalY = pdf.previousAutoTable ? pdf.previousAutoTable.finalY + 20 : 150;
-        pdf.text('Remarks:', 20, finalY);
-        pdf.setFontSize(10);
-        const remarksSplit = pdf.splitTextToSize(visit.remarks || 'None', pageWidth - 40);
-        pdf.text(remarksSplit, 20, finalY + 10);
-
-        // Add reports if any
-        if (Array.isArray(visit.reports) && visit.reports.length > 0) {
-            const reportsY = finalY + remarksSplit.length * 7 + 20;
-            pdf.setFontSize(12);
-            pdf.text('Reports:', 20, reportsY);
-            visit.reports.forEach((report, index) => {
-                pdf.setFontSize(10);
-                pdf.text(`${index + 1}. ${report.title} - ${report.remarks}`, 30, reportsY + (index + 1) * 10);
+    
+            // Reset styles
+            visitContent.style.width = originalWidth;
+    
+            // Convert to PDF
+            const imgData = canvas.toDataURL('image/jpeg', 1.0);
+            const pdf = new jsPDF({
+                orientation: 'portrait',
+                unit: 'px',
+                format: [canvas.width, canvas.height]
             });
+    
+            pdf.addImage(imgData, 'JPEG', 0, 0, canvas.width, canvas.height);
+            
+            const visitDate = new Date(visit.created_at).toLocaleDateString();
+            pdf.save(`medical_visit_${visitDate.replace(/\//g, '-')}.pdf`);
+    
+        } catch (error) {
+            console.error('Error generating PDF:', error);
+            toast.error('Failed to generate PDF');
         }
-
-        pdf.save(`medical_visit_${visitDate}.pdf`);
     };
 
     if (loading) {
