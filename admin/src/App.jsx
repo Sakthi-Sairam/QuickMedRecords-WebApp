@@ -1,7 +1,7 @@
 import React, { useContext } from 'react'
 import { DoctorContext } from './context/DoctorContext';
 import { AdminContext } from './context/AdminContext';
-import { Route, Routes } from 'react-router-dom'
+import { Route, Routes, useLocation } from 'react-router-dom'
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Navbar from './components/Navbar'
@@ -14,18 +14,23 @@ import Login from './pages/Login';
 import DoctorAppointments from './pages/Doctor/DoctorAppointments';
 import DoctorDashboard from './pages/Doctor/DoctorDashboard';
 import DoctorProfile from './pages/Doctor/DoctorProfile';
+import PatientRecord from './pages/Doctor/PatientRecord';
 
 const App = () => {
 
   const { dToken } = useContext(DoctorContext)
   const { aToken } = useContext(AdminContext)
+  const location = useLocation();
+
+  // Check if current path is patient record view
+  const isPatientRecordView = location.pathname.includes('/patient-record/');
 
   return dToken || aToken ? (
     <div className='bg-[#F8F9FD]'>
       <ToastContainer />
       <Navbar />
       <div className='flex items-start'>
-        <Sidebar />
+        {!isPatientRecordView && <Sidebar />}
         <Routes>
           <Route path='/' element={<></>} />
           <Route path='/admin-dashboard' element={<Dashboard />} />
@@ -35,6 +40,7 @@ const App = () => {
           <Route path='/doctor-dashboard' element={<DoctorDashboard />} />
           <Route path='/doctor-appointments' element={<DoctorAppointments />} />
           <Route path='/doctor-profile' element={<DoctorProfile />} />
+          <Route path='/patient-record/:token' element={<PatientRecord />} />
         </Routes>
       </div>
     </div>
