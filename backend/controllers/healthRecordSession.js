@@ -24,7 +24,7 @@ export const createSession = async (req, res) => {
     res.json({
       success: true,
       message: "Temporary session created",
-      link: `/api/health-record/session/${token}`,
+      token,
     });
   } catch (error) {
     console.error(error);

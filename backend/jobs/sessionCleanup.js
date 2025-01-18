@@ -9,12 +9,9 @@ const cleanupExpiredSessions = async () => {
   }
 };
 
-// Run every minute with a starting delay of 1 minute
 const scheduleSessionCleanup = () => {
-  setTimeout(() => {
-    cleanupExpiredSessions();
-    setInterval(cleanupExpiredSessions, 60 * 1000); // Every minute
-  }, 60 * 1000); // Initial delay of 1 minute
+    cleanupExpiredSessions()
+    setInterval(cleanupExpiredSessions, 30 * 60 * 1000);
 };
 
 export default scheduleSessionCleanup;

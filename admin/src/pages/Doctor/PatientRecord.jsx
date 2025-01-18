@@ -27,7 +27,11 @@ const PatientRecord = () => {
         }
       } catch (err) {
         setError(err.message);
-        toast.error(err.message);
+        if(err.response.status === 403) {
+            setError("Unauthorized access");
+            toast.error('Unauthorized access');
+        }else
+            toast.error(err.message);
       } finally {
         setLoading(false);
       }
@@ -92,16 +96,16 @@ const PatientRecord = () => {
     );
   };
 
-  if (loading) {
+if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mb-4"></div>
-          <p className="text-gray-600">Loading patient record...</p>
+        <div className="fixed inset-0 flex items-center justify-center bg-white">
+            <div className="inline-flex flex-col items-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mb-4"></div>
+                <p className="text-gray-600">Loading patient record...</p>
+            </div>
         </div>
-      </div>
     );
-  }
+}
 
   if (error) {
     return (
@@ -238,7 +242,7 @@ const PatientRecord = () => {
             <div className="max-h-[600px] overflow-y-auto p-6">
               <div className="space-y-6">
                 {healthRecord.doctor_visits.map((visit, index) => (
-                  <div key={index} className="border rounded-lg p-4">
+                  <div key={index} className="border rounded-lg p-4 shadow-lg">
                     <div className="flex justify-between items-start mb-4">
                       <div>
                         <h3 className="text-lg font-semibold text-gray-900">

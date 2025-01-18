@@ -1,7 +1,7 @@
 import React from 'react';
 
 const SwiperSlideContent = ({ visit, downloadPDF, index, formattedDate }) => (
-    <div className="bg-white rounded-xl shadow-lg overflow-hidden w-full max-w-[210mm] mx-auto p-4 md:p-8 lg:p-12">
+    <div className="bg-white rounded-xl shadow-lg w-full max-w-[210mm] mx-auto p-4 md:p-8 lg:p-12">
         {/* Header Section */}
         <div className="border-b-2 border-gray-200 pb-4 md:pb-6 mb-4 md:mb-8">
             <div className="flex flex-col md:flex-row justify-between items-start gap-4 mb-4 md:mb-6">
