@@ -2,6 +2,7 @@ import TemporarySession from "../models/tempSessionModel.js";
 import healthRecordModel from "../models/healthRecordModel.js";
 import userModel from "../models/userModel.js";
 import crypto from "crypto";
+import { generateHealthRecordSummary } from "../services/summarizationService.js";
 
 export const createSession = async (req, res) => {
   try {
@@ -98,10 +99,21 @@ export const accessSession = async (req, res) => {
         .status(404)
         .json({ success: false, message: "Health record not found" });
     }
+    const summary = await generateHealthRecordSummary({session,healthRecord});
 
-    res.json({ success: true,session , healthRecord });
+    res.json({ success: true,session , healthRecord, summary });
   } catch (error) {
     console.error(error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export const listUserSessions = async (req, res) => {
+  try {
+    const { userId } = req.body;
+    const sessions = await TemporarySession.find({ userId }).sort({ createdAt: -1 });
+    res.json({ success: true, sessions });
+  } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
 };

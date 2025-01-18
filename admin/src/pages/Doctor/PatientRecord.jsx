@@ -11,6 +11,7 @@ const PatientRecord = () => {
   const [error, setError] = useState(null);
   const [healthRecord, setHealthRecord] = useState(null);
   const [session, setSession] = useState(null);
+  const [summary, setSummary] = useState('');
   const [activeTab, setActiveTab] = useState('overview');
   const { dToken } = useContext(DoctorContext);
 
@@ -21,6 +22,7 @@ const PatientRecord = () => {
         if (response.data.success) {
           setHealthRecord(response.data.healthRecord);
           setSession(response.data.session);
+          setSummary(response.data.summary);
         } else {
           setError('Failed to fetch health record');
           toast.error('Failed to fetch health record');
@@ -123,7 +125,7 @@ if (loading) {
       {/* Tabs */}
       <div className="border-b border-gray-200 mb-6">
         <nav className="flex space-x-8">
-          {['overview', 'visits', 'reports'].map((tab) => (
+          {['overview', 'visits', 'reports', 'ai summary'].map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
@@ -316,6 +318,13 @@ if (loading) {
                 </div>
               ))
             )}
+          </div>
+        )}
+
+        {activeTab === 'ai summary' && (
+          <div className="bg-white rounded-lg shadow-lg p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">AI Summary</h3>
+            <pre className="whitespace-pre-wrap text-gray-800">{summary}</pre>
           </div>
         )}
       </div>
