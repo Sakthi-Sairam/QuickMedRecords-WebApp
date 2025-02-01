@@ -51,7 +51,9 @@ const ShareHealthRecord = ({ backendUrl, token }) => {
     };
 
     const getShareUrl = (sessionToken) => {
-        return `http://localhost:5174/patient-record/${sessionToken}`;
+        // return `http://localhost:5174/patient-record/${sessionToken}`;
+        const adminUrl = import.meta.env.VITE_ADMIN_URL;
+        return `${adminUrl}/patient-record/${sessionToken}`;
     };
 
     const copyToClipboard = async (sessionToken) => {

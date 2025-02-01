@@ -4,8 +4,9 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 import { useContext } from 'react';
 import { DoctorContext } from '../../context/DoctorContext';
-
+import { AppContext } from '../../context/AppContext';
 const PatientRecord = () => {
+  const { backendUrl } = useContext(AppContext);
   const { token } = useParams();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -18,7 +19,8 @@ const PatientRecord = () => {
   useEffect(() => {
     const fetchHealthRecord = async () => {
       try {
-        const response = await axios.get(`http://localhost:4000/api/health-record/session/${token}`, { headers: { dToken } });
+        // const response = await axios.get(`http://localhost:4000/api/health-record/session/${token}`, { headers: { dToken } });
+        const response = await axios.get(`${backendUrl}/api/health-record/session/${token}`, { headers: { dToken } });
         if (response.data.success) {
           setHealthRecord(response.data.healthRecord);
           setSession(response.data.session);
@@ -33,7 +35,7 @@ const PatientRecord = () => {
             setError("Unauthorized access");
             toast.error('Unauthorized access');
         }else
-            toast.error(err.message);
+            toast.error(err.message+"::"+response.data.message);
       } finally {
         setLoading(false);
       }
